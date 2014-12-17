@@ -13,21 +13,24 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import net.taunova.importer.ImportTask;
+import net.taunova.importer.PCapImportTask;
+import net.taunova.importer.pcap.exception.PCapSourceNotFound;
 import net.taunova.importer.pcap.exception.PCapInvalidFormat;
 
 /**
  *
+ * 
+ * 
  * @author Renat Gilmanov
  *
  * http://wiki.wireshark.org/Development/LibpcapFileFormat
  */
-public class PCapImportTask implements ImportTask {
+class PCapImportTaskImpl implements PCapImportTask {
 
     protected final int BE_MAGIC = 0xa1b2c3d4;
     protected final int LE_MAGIC = 0xd4c3b2a1;
 
-    /**
+    /*
      * magic_number: used to detect the file format itself and the byte ordering.
      *               The writing application writes 0xa1b2c3d4 with it's native
      *               byte ordering format into this field. The reading application
@@ -66,18 +69,30 @@ public class PCapImportTask implements ImportTask {
     private DataInputStream inputStream;
     private boolean importFinished = false;
 
-    public PCapImportTask(File file, PCapEventHandler handler) {
+    /**
+     * 
+     * @param file
+     * @param handler 
+     */
+    public PCapImportTaskImpl(File file, PCapEventHandler handler) {
         this.file = file;
         this.handler = handler;       
     }
 
     /**
-     *
+     * This method also tries to parse a PCap header in order to make sure 
+     * proper has been supplied.
+     * 
+     * @throws net.taunova.importer.pcap.exception.PCapSourceNotFound
      * @throws Exception
      */
     @Override
-    public void init() throws FileNotFoundException, PCapInvalidFormat {
-        inputStream = new DataInputStream(new FileInputStream(file));
+    public void init() throws PCapSourceNotFound, PCapInvalidFormat {
+        try{
+            inputStream = new DataInputStream(new FileInputStream(file));
+        }catch(FileNotFoundException e) {
+            throw new PCapSourceNotFound(e);
+        }
         decodeHeader(inputStream);
         handler.onImportStart();
 
@@ -180,12 +195,12 @@ public class PCapImportTask implements ImportTask {
         }
 
         builder.append("magic=").append(Integer.toHexString(magicNumber));
-        builder.append(" versionMajor=").append(Integer.toHexString(versionMajor));
-        builder.append(" versionMinor=").append(Integer.toHexString(versionMinor));
-        builder.append(" zoneCorrectio=").append(Integer.toHexString(zoneCorrection));
-        builder.append(" timestampAccuracy=").append(Integer.toHexString(accuracy));
-        builder.append(" snapshotLength=").append(Integer.toHexString(snapshotLength));
-        builder.append(" datalinkType=").append(Integer.toHexString(datalinkType));
+        builder.append("  versionMajor=").append(Integer.toHexString(versionMajor));
+        builder.append("  versionMinor=").append(Integer.toHexString(versionMinor));
+        builder.append("  zoneCorrectio=").append(Integer.toHexString(zoneCorrection));
+        builder.append("  timestampAccuracy=").append(Integer.toHexString(accuracy));
+        builder.append("  snapshotLength=").append(Integer.toHexString(snapshotLength));
+        builder.append("  datalinkType=").append(Integer.toHexString(datalinkType));
         return builder.toString();
     }
 }

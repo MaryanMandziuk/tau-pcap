@@ -6,16 +6,32 @@
  */
 package net.taunova.importer.pcap;
 
+import java.io.File;
+import net.taunova.importer.PCapImportTask;
+
 /**
- *
+ * Provides various helpers.
+ * 
  * @author Renat.Gilmanov
  */
 public class PCapHelper {
 
     /**
-     *
-     * @param value
-     * @return
+     * Create an import tasks implementation in order to import data from a file.
+     * 
+     * @param file file to be processed
+     * @param handler processing handler
+     * @return instance of the task
+     */
+    public static PCapImportTask createImportTask(File file, PCapEventHandler handler) {
+        return new PCapImportTaskImpl(file, handler);
+    }
+    
+    /**
+     * Converts endianness.
+     * 
+     * @param value value to be converted
+     * @return converted result
      */
     public static int convert(int value) {
         return ((value & 0x000000FF) << 24
@@ -25,9 +41,10 @@ public class PCapHelper {
     }
 
     /**
-     *
-     * @param value
-     * @return
+     * Converts endianness.
+     * 
+     * @param value value to be converted
+     * @return converted result
      */
     public static short convert(short value) {
         return (short) (((value & 0xFF00) >>> 8)

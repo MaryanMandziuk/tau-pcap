@@ -7,22 +7,36 @@
 package net.taunova.importer.pcap;
 
 /**
- *
+ * Represents a PCap version.
+ * 
  * @author Renat.Gilmanov
  */
 public class PCapVersion {
     private short major;
     private short minor;
 
+    /**
+     * 
+     * @param major
+     * @param minor 
+     */
     public PCapVersion(short major, short minor) {
         this.major = major;
         this.minor = minor;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public short getMajor() {
         return major;
     }
 
+    /**
+     * 
+     * @return 
+     */
     public short getMinor() {
         return minor;
     }

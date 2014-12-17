@@ -11,37 +11,43 @@ import java.io.DataInputStream;
 import java.io.IOException;
 
 /**
- *
+ * Receives notification of the logical content of a PCap data.
+ * 
  * @author Renat.Gilmanov
  */
 public interface PCapEventHandler {
 
     /**
-     * 
+     * Receive notification of the beginning of the data.
      */
     void onImportStart();
     
     /**
-     * 
+     * Receive notification of the end of the data.
      */
     void onImportFinish();
     
     /**
-     * 
+     * Receive notification a processing error.
      */
     void onImportFailed();    
     
     /**
+     * Receive notification of a PCap header.
      * 
-     * @param version
-     * @param type
+     * @param version extracted version
+     * @param type extracted type
      */
     void handleInfo(PCapVersion version, PCapDatalink type);
 
     /**
+     * Receive notification of an entity.
      * 
-     * @param entity
-     * @param body
+     * @param saved saved entity size
+     * @param actual actual entity size
+     * @param timestamp entity timestamp
+     * @param stream data stream to read entity content
+     * @throws java.io.IOException
      */
     void handleEntity(int saved, int actual, long timestamp, DataInputStream stream) throws IOException;
 }

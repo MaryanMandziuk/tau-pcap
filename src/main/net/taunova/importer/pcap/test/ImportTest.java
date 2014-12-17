@@ -11,7 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import net.taunova.importer.pcap.PCapDatalink;
 import net.taunova.importer.pcap.PCapEventHandler;
-import net.taunova.importer.pcap.PCapImportTask;
+import net.taunova.importer.PCapImportTask;
+import net.taunova.importer.pcap.PCapHelper;
 import net.taunova.importer.pcap.PCapVersion;
 
 /**
@@ -56,8 +57,7 @@ public class ImportTest {
     public static void main(String[] args) throws Exception {
        System.out.println("Testing PCap import"); 
        DefaultHandler handler = new DefaultHandler();
-       //PCapImportTask importTask = new PCapImportTask(new File("data/rtcp-example.pcap"), handler);
-       PCapImportTask importTask = new PCapImportTask(new File("data/default_udp.pcap"), handler);
+       PCapImportTask importTask = PCapHelper.createImportTask(new File("data/default_udp.pcap"), handler);
        importTask.init();
        
        while(!importTask.isFinished()) {

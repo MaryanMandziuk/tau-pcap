@@ -8,24 +8,35 @@
 package net.taunova.importer.pcap;
 
 /**
+ * Represents link-layer header type, specifying the type of headers at the
+ * beginning of the packet.
+ *
+ * This can be various types such as 802.11, 802.11 with various radio
+ * information, PPP, Token Ring, FDDI, etc.
  *
  * @author Renat Gilmanov
  */
 public class PCapDatalink {
 
+    /**
+     * Link-layer header.
+     */
     private int type;
     
     /**
+     * Constructs a data link object with type code as specified
+     * here: {@link http://www.tcpdump.org/linktypes.html}.
      * 
-     * @param type 
+     * @param type link type code
      */
     public PCapDatalink(int type) {
         this.type = type;        
     }
 
     /**
+     * Returns link type code.
      * 
-     * @return 
+     * @return link type code
      */
     public int getType() {
         return type;

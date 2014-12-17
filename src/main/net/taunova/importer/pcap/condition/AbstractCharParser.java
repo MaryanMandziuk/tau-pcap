@@ -56,6 +56,7 @@ public class AbstractCharParser extends AbstractParser {
         }
         
         final int STEPS = step[0].length;
+        
         for(int i=0; i<step.length;i++) {
             int type = (Integer)step[i][1];
             String defintion = (String)step[i][0];
@@ -79,6 +80,9 @@ public class AbstractCharParser extends AbstractParser {
                     break;
                 case SLIST:
                     _processStringList(defintion);
+                    break;
+                case ALL:
+                    _processAll(null, step);
                     break;
                 default:
                     System.out.println("Unknown type: " + type);
@@ -125,6 +129,10 @@ public class AbstractCharParser extends AbstractParser {
         }
     }            
     
+    protected void _processAll(String list, Object[] states) {
+        
+    }
+    
     protected void _processString(String str) {
         if(str.length() == 0) {
             throw new IllegalArgumentException("String can't be empty");
@@ -132,6 +140,7 @@ public class AbstractCharParser extends AbstractParser {
         
         _registerInput(str, test);
     }    
+    
     
     protected void _registerInput(char ch, Object[] states) {
         if(stateMap.containsKey(ch)) {
