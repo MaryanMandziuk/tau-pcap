@@ -39,6 +39,8 @@ public class AbstractCharParser extends AbstractParser {
         {"other",   ALL,       ERR,      ERR,      ERR,      ERR,   ERR  },
     };
 
+    private Object[] finalStep = null;
+    
     /**
      * 
      */
@@ -47,9 +49,20 @@ public class AbstractCharParser extends AbstractParser {
     }
     
     //protected TreeMap<Object, Object[]> stateMap = new TreeMap<>();
-    protected Map<Object, Object[]> stateMap = new HashMap<>();
     protected List<Object> stateList = new LinkedList<>();
+    protected Map<Object, Object[]> stateMap = new HashMap<>();
+    protected Map<String, Object[]> stringMap = new HashMap<>();
     
+    
+    public void parse(String text) {
+        
+    }
+    
+    /**
+     * 
+     * 
+     * @param step 
+     */
     protected void translate(Object[][] step) {
         if(step.length == 0) {
             throw new IllegalArgumentException("no states is not allowed");
@@ -79,10 +92,10 @@ public class AbstractCharParser extends AbstractParser {
                     _processCharList(defintion, step[i]);
                     break;
                 case SLIST:
-                    _processStringList(defintion);
+                    _processStringList(defintion, step[i]);
                     break;
                 case ALL:
-                    _processAll(null, step);
+                    _createFinalRule(step);
                     break;
                 default:
                     System.out.println("Unknown type: " + type);
@@ -94,14 +107,14 @@ public class AbstractCharParser extends AbstractParser {
     
     protected void _processChar(String str, Object[] states) {
         if(str.length() != 1) {
-            throw new IllegalArgumentException("Can't parse char rule: " + str);
+            throw new IllegalArgumentException("Can't parse the char rule: " + str);
         }            
         char ch = str.charAt(0);       
         _registerInput(ch, states);
     }
 
     protected void _processRange(String range, Object[] states) {        
-        if(range.length() !=3 || !range.contains("-")) {
+        if(range.length() !=3 || range.charAt(1) != '-') {
             throw new IllegalArgumentException("Range should be defined as 'a-b': " + range);
         }
         
@@ -115,8 +128,7 @@ public class AbstractCharParser extends AbstractParser {
         
         for(char next=first; next<first+size; next++) {
             _registerInput(next, states);
-        }
-       
+        }       
     }        
 
     protected void _processCharList(String list, Object[] states) {
@@ -129,8 +141,8 @@ public class AbstractCharParser extends AbstractParser {
         }
     }            
     
-    protected void _processAll(String list, Object[] states) {
-        
+    protected void _createFinalRule(Object[] states) {
+        finalStep = states;
     }
     
     protected void _processString(String str) {
@@ -149,21 +161,23 @@ public class AbstractCharParser extends AbstractParser {
         stateMap.put(ch, states);
     }
     
-    protected void _registerInput(String str, Object[] states) {
-        if(stateMap.containsKey(str)) {
-            throw new IllegalArgumentException("String has already been registered: " + str);
+    protected void _registerInput(String string, Object[] states) {
+        if(stateMap.containsKey(string)) {
+            throw new IllegalArgumentException("String has already been registered: " + string);
         }
-        stateMap.put(str, states);
-    }    
-    
-    
-    protected void _processStringList(String range) {
-        
+        stringMap.put(string, states);
     }        
     
-    protected void _createFinalRule(String str) {
+    protected void _processStringList(String range, Object[] states) {
+        final String SEPARATOR = ",";
+        if(!range.contains(SEPARATOR)) {
+            throw new IllegalArgumentException("Can't parse string list: " + range);
+        }                    
         
-    }
+        for(String string : range.split(SEPARATOR)) {
+            stringMap.put(string, states);
+        }
+    }        
     
     public static void main(String[] args) {
         AbstractCharParser parser = new AbstractCharParser();        
