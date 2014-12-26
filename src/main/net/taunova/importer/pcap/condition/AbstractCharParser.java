@@ -6,6 +6,7 @@
  */
 package net.taunova.importer.pcap.condition;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,6 +42,12 @@ public class AbstractCharParser extends AbstractParser {
 
     private Object[] finalStep = null;
     
+    class Node {
+        private StringBuilder text = new StringBuilder();
+        private List<Node> children = new ArrayList<Node>();
+        
+    }
+    
     /**
      * 
      */
@@ -55,6 +62,24 @@ public class AbstractCharParser extends AbstractParser {
     
     
     public void parse(String text) {
+        int index = 0;
+        char ch = text.charAt(index);
+        
+        if(stateMap.containsKey(ch)) {
+            // ok let's process this rule
+            
+        }else{
+            for(String str : stringMap.keySet()) {
+                if(text.startsWith(str, index)) {
+                    // process rule
+                    index += str.length();
+                    break;
+                }    
+            }            
+        }
+    }
+    
+    protected void processRule(String value, Object[] rule) {
         
     }
     
