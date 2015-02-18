@@ -18,12 +18,12 @@ import net.taunova.importer.pcap.exception.PCapSourceNotFound;
 import net.taunova.importer.pcap.exception.PCapInvalidFormat;
 
 /**
- *
+ * Implements <a href="http://wiki.wireshark.org/Development/LibpcapFileFormat">PCap</a> parsing logic. 
  * 
+ * This implementation does follow (@see PCapImportTask) approach and provides
+ * a way to parse PCap file packet by packet.
  * 
  * @author Renat Gilmanov
- *
- * http://wiki.wireshark.org/Development/LibpcapFileFormat
  */
 class PCapImportTaskImpl implements PCapImportTask {
 
@@ -54,18 +54,21 @@ class PCapImportTaskImpl implements PCapImportTask {
      */
     protected short versionMajor    = 0;
     protected short versionMinor    = 0;
-
+    protected PCapVersion version;
+    
     protected int magicNumber       = 0;
     protected int zoneCorrection    = 0;
     protected int accuracy          = 0;
     protected int snapshotLength    = 0;
+    
     protected int datalinkType      = 0;
-
+    protected PCapDatalink dataLink;
+    
     protected boolean convert = false;
 
     protected File file = null;
     protected PCapEventHandler handler = null;
-
+    
     private DataInputStream inputStream;
     private boolean importFinished = false;
 
@@ -155,8 +158,9 @@ class PCapImportTaskImpl implements PCapImportTask {
             snapshotLength = (convert) ? PCapHelper.convert(dataInput.readInt()) : dataInput.readInt();
             datalinkType   = (convert) ? PCapHelper.convert(dataInput.readInt()) : dataInput.readInt();
 
-            handler.handleInfo(new PCapVersion(versionMajor, versionMinor), 
-                    new PCapDatalink(datalinkType));
+            version = new PCapVersion(versionMajor, versionMinor);
+            dataLink = new PCapDatalink(datalinkType);
+            handler.handleInfo(version, dataLink);
         } catch (IOException ex) {
             throw new PCapInvalidFormat(ex);
         }
@@ -202,5 +206,37 @@ class PCapImportTaskImpl implements PCapImportTask {
         builder.append("  snapshotLength=").append(Integer.toHexString(snapshotLength));
         builder.append("  datalinkType=").append(Integer.toHexString(datalinkType));
         return builder.toString();
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public int getSnapshotLength() {
+        return snapshotLength;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public short getVersionMajor() {
+        return versionMajor;
+    }
+
+    /**
+     * 
+     * @return 
+     */
+    public short getVersionMinor() {
+        return versionMinor;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    public PCapVersion getVersion() {
+        return version;
     }
 }

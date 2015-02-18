@@ -12,8 +12,9 @@ package net.taunova.importer.pcap;
  * @author Renat.Gilmanov
  */
 public class PCapVersion {
-    private short major;
-    private short minor;
+    
+    private final short major;
+    private final short minor;
 
     /**
      * 

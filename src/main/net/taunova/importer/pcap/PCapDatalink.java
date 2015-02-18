@@ -21,7 +21,7 @@ public class PCapDatalink {
     /**
      * Link-layer header.
      */
-    private int type;
+    private final int type;
     
     /**
      * Constructs a data link object with type code as specified
@@ -42,6 +42,7 @@ public class PCapDatalink {
         return type;
     }
     
+    @Override
     public String toString() {
         return Integer.toString(type);
     }

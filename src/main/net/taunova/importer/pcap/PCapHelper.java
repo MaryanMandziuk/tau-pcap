@@ -14,7 +14,7 @@ import net.taunova.importer.PCapImportTask;
  * 
  * @author Renat.Gilmanov
  */
-public class PCapHelper {
+public final class PCapHelper {
 
     /**
      * Create an import tasks implementation in order to import data from a file.
@@ -52,7 +52,7 @@ public class PCapHelper {
     }
 
     /**
-     *
+     * Utility class constructor.
      */
     private PCapHelper() {
     }
