@@ -120,7 +120,7 @@ class PCapImportTaskImpl implements PCapImportTask {
         } catch (PCapInvalidFormat ex) {
             handler.onImportFailed();
             throw ex;
-        }
+        } 
     }
 
     /**
@@ -144,7 +144,7 @@ class PCapImportTaskImpl implements PCapImportTask {
     protected void decodeHeader(DataInputStream dataInput) throws PCapInvalidFormat {
         try {
             magicNumber = dataInput.readInt();
-
+            
             if (magicNumber != BE_MAGIC && magicNumber != LE_MAGIC) {
                 throw new PCapInvalidFormat("Wrong pcap magic: " + Integer.toHexString(magicNumber));
             } else if (magicNumber == LE_MAGIC) {
@@ -178,14 +178,18 @@ class PCapImportTaskImpl implements PCapImportTask {
             int microseconds = (convert) ? PCapHelper.convert(dataInput.readInt()) : dataInput.readInt();
             int savedLength  = (convert) ? PCapHelper.convert(dataInput.readInt()) : dataInput.readInt();
             int actualLength = (convert) ? PCapHelper.convert(dataInput.readInt()) : dataInput.readInt();
-
+           
+            if (savedLength > this.snapshotLength || savedLength > actualLength) {
+                throw new PCapInvalidFormat("SavedLength is larger than actualLength or snapshotLength");
+            }
+            
             long timestamp   = ((long) seconds) * 1000000 + microseconds;
             handler.handleEntity(savedLength, actualLength, timestamp, dataInput);
         } catch (EOFException e) {
-            throw e;
+            throw e;      
         } catch (IOException ex) {
             throw new PCapInvalidFormat(ex);
-        }
+        } 
     }
 
     @Override

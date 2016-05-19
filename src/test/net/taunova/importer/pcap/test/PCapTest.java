@@ -16,7 +16,6 @@ import net.taunova.importer.pcap.PCapHelper;
 import net.taunova.importer.pcap.exception.PCapInvalidFormat;
 import net.taunova.importer.pcap.exception.PCapSourceNotFound;
 import org.hamcrest.CoreMatchers;
-
 import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -85,6 +84,29 @@ public class PCapTest {
         return testPCap;
     }
     
+    
+    /**
+     * Create temporary pcap file with invalid packet length
+     * @param name
+     * @return
+     * @throws IOException 
+     */
+    public File createTempPCapWithInvalidPacketLength(String name) throws IOException {
+        final File testPCap = tempFolder.newFile(name + PCAP_EX);
+        DataOutputStream os = new DataOutputStream(new FileOutputStream(testPCap));
+        try {
+            long[] bin = {0xd4c3b2a102000400L, 0x0000000000000000L,
+                0xffff000001000000L, 0x7934c242cd710800L,
+                0x5b0000004b000000L,};
+            for (int i = 0; i < bin.length; i++) {
+                os.writeLong(bin[i]);
+            }
+
+        } finally {
+            os.close();
+        }
+        return testPCap;
+    }
 
     /**
      * Testing PCap.
@@ -144,12 +166,12 @@ public class PCapTest {
     
     
     /**
-     * Testing pcap with invalid data
+     * Testing pcap with invalid magic number
      * @throws Exception 
      */
     @Test(expected = PCapInvalidFormat.class)
     public void testInvalidMagicNumber() throws Exception {
-        System.out.println("Testing pcap with invalid data");
+        System.out.println("Testing pcap with invalid magic number");
         
         final File testPCap = createTempPCapInvalidData("test");
         ImportTest.DefaultHandler handler = new ImportTest.DefaultHandler();
@@ -171,4 +193,18 @@ public class PCapTest {
         importTask.init();
     }
 
+    
+    /**
+     * Testing for incorrect packet length saved in file
+     * @throws Exception 
+     */
+    @Test(expected = PCapInvalidFormat.class)
+    public void testPacketLength() throws Exception {
+        System.out.println("Testing for incorrect packet length saved in file");
+        
+        final File testPCap = createTempPCapWithInvalidPacketLength("test");
+        ImportTest.DefaultHandler handler = new ImportTest.DefaultHandler();
+        PCapImportTask importTask = PCapHelper.createImportTask(testPCap, handler);
+        importTask.init();
+    }
 }
